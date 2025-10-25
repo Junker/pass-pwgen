@@ -50,8 +50,10 @@ cmd_pwgen_exec () {
 	done
 
 	local pass_length="${2:-$GENERATED_LENGTH}"
+	[[ $pass_length =~ ^[0-9]+$ ]] || die "Error: pass-length \"$pass_length\" must be a number."
+	[[ $pass_length -gt 0 ]] || die "Error: pass-length must be greater than zero."
 
-	if [ "$wanthelp" = 1 ]; then
+	if [[ ( $# -ne 2 && $# -ne 1 ) || $wanthelp -eq 1 || ( $qrcode -eq 1 && $clip -eq 1 )]]; then
 		cmd_pwgen_help
 		exit 0
 	fi
@@ -62,7 +64,6 @@ cmd_pwgen_exec () {
 
 	local path="$1"
 
-	# NOTE: lots of copypasta
 	check_sneaky_paths "$1"
 	mkdir -p -v "$PREFIX/$(dirname -- "$path")"
 	set_gpg_recipients "$(dirname -- "$path")"
